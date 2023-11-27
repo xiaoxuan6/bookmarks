@@ -4,7 +4,7 @@
 
 # Docker
 
-```shell
+```docker
 docker run --name=bookmarks -p 8080:8080 -v .env:/app/.env -v bookmarks.json:/app/bookmarks.json -d ghcr.io/xiaoxuan6/bookmarks:latest
 ```
 
@@ -13,7 +13,7 @@ docker run --name=bookmarks -p 8080:8080 -v .env:/app/.env -v bookmarks.json:/ap
 
 # Docker Compose
 
-```shell
+```yaml
 version: '3.8'
 services:
   bookmarks:
@@ -25,6 +25,25 @@ services:
       - $PWD/.env:/app/.env
       - $PWD/bookmarks.json:/app/bookmarks.json
     restart: always
+```
+
+# .env 配置
+
+```shell
+title="xiaoxuan6‘s 的书签"
+author="xiaoxuan6"
+description="xiaoxuan6 的书签列表"
+
+port="8080"
+```
+
+如何 `.env` 配置为空，将使用默认配置
+
+```shell
+title="xiaoxuan6、s Bookmarks"
+author="xiaoxuan6"
+description="xiaoxuan6、s Bookmarks"
+port="8080"
 ```
 
 # bookmarks.json 如何获取

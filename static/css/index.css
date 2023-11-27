@@ -1,0 +1,15 @@
+li {
+    margin-right: 10px;
+    border: 1px solid #666; /* 黑色边框 */
+    padding: 5px; /* 列表项的内边距 */
+    border-radius: 8px; /* 设置四个圆角的半径 */
+}
+
+ul.flex {
+    flex-wrap: wrap;
+}
+
+li:hover {
+    background-color: #666; /* 鼠标悬停时的背景色 */
+    color: #fff; /* 鼠标悬停时的文字颜色 */
+}

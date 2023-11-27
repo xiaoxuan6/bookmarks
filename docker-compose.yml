@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  server:
+    container_name: bookmarks
+    image: ghcr.io/xiaoxuan6/bookmarks:latest
+    ports:
+      - 8080:8080
+    volumes:
+      - $PWD/.env:/app/.env
+      - $PWD/data:/app/data

@@ -1,0 +1,31 @@
+FROM golang:1.20.4-alpine3.18 AS build
+
+COPY . /src
+WORKDIR /src
+
+RUN go env -w GO111MODULE=on && \
+    go env -w GOPROXY=https://goproxy.cn,direct && \
+    go mod tidy
+
+RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o bookmarks .
+
+FROM alpine
+
+COPY --from=build /src/bookmarks /app/bookmarks
+COPY --from=build /src/static /app/static
+COPY --from=build /src/.env.example /app/.env
+COPY --from=build /src/data /app/data
+
+WORKDIR /app
+
+RUN export MY_PORT=$(cat .env | grep port | awk -F '=' '{print $2}' | sed 's/[^0-9]//g') && \
+    echo $MY_PORT
+
+EXPOSE $MY_PORT
+
+RUN apk add --no-cache tzdata
+ENV TZ=Asia/Shanghai
+
+ENTRYPOINT ["./bookmarks"]
+
+

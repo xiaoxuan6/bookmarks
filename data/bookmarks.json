@@ -1,17 +1,10 @@
-{
-  "name": "书签栏",
-  "children": [
-    {
-      "name": "百度",
-      "url": "https://www.baidu.com"
-    },
-    {
-      "name": "谷歌",
-      "url": "https://www.google.com"
-    },
-    {
-      "name": "必应",
-      "url": "https://cn.bing.com"
-    }
-  ]
-}
+[
+  {
+    "name": "百度",
+    "url": "https://www.baidu.com"
+  },
+  {
+    "name": "谷歌",
+    "url": "https://www.google.com"
+  }
+]

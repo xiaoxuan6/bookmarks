@@ -29,10 +29,10 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
-    rlcp: true
     files:
       - .env.example
       - data/*
+      - README.md
 
 changelog:
   sort: asc
@@ -43,7 +43,7 @@ changelog:
       - '^Merge'
   groups:
     - title: '🚀 Features'
-      regexp: '^feat:'
+      regexp: 'feat:'
     - title: '🐛 Bug Fixes'
-      regexp: '^fix:'
+      regexp: 'fix:'
     - title: '🔨 Others'

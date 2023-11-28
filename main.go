@@ -6,7 +6,11 @@ import (
 	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
+	"io/fs"
+	"io/ioutil"
 	"net/http"
+	"os"
+	"path/filepath"
 	"text/template"
 )
 
@@ -16,15 +20,13 @@ var (
 	indexFile embed.FS
 	//go:embed static
 	dirStatic embed.FS
-	//go:embed data/bookmarks.json
-	data []byte
 )
 
 type Config struct {
 	Port        string `default:"8080"`
-	Title       string `default:"xiaoxuan6、s Bookmarks"`
+	Title       string `default:"xiaoxuan6‘s Bookmarks"`
 	Author      string `default:"xiaoxuan6"`
-	Description string `default:"xiaoxuan6、s Bookmarks"`
+	Description string `default:"xiaoxuan6’s Bookmarks"`
 }
 
 func init() {
@@ -40,17 +42,12 @@ func init() {
 
 func main() {
 	http.HandleFunc("/", index)
-	http.HandleFunc("/favicon.ico", favicon)
 	http.HandleFunc("/api/bookmarks", bookmarks)
 	http.Handle("/static/", http.FileServer(http.FS(dirStatic)))
 	err := http.ListenAndServe(":"+config.Port, nil)
 	if err != nil {
 		panic(fmt.Errorf("error starting server: %w", err))
 	}
-}
-
-func favicon(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "static/favicon.ico")
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
@@ -83,17 +80,48 @@ type (
 
 func bookmarks(w http.ResponseWriter, r *http.Request) {
 	r.Header.Set("Content-Type", "application/json")
-	var bookmark Bookmark
-	err := json.Unmarshal(data, &bookmark)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		_, _ = w.Write(fail("error parsing bookmarks"))
-		fmt.Println("error parsing bookmarks: %w", err)
-		return
-	}
 
-	flattenData(bookmark.Children)
-	_, _ = w.Write(success(d))
+	_ = filepath.Walk("data", func(path string, info fs.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+
+		if filepath.Ext(path) != ".json" {
+			return nil
+		}
+
+		dir, _ := os.Getwd()
+		b, err := ioutil.ReadFile(filepath.Join(dir, "data", info.Name()))
+		if err != nil {
+			return nil
+		}
+
+		var bookmark Bookmark
+		err = json.Unmarshal(b, &bookmark)
+		if err == nil {
+			flattenData(bookmark.Children)
+		}
+
+		var items []Item
+		err = json.Unmarshal(b, &items)
+		if err == nil {
+			d.Item = append(d.Item, items...)
+		}
+
+		return nil
+	})
+
+	b, _ := json.Marshal(struct {
+		Code int         `json:"code"`
+		Data interface{} `json:"data"`
+		Msg  string      `json:"msg"`
+	}{
+		200,
+		d,
+		"ok",
+	})
+
+	_, _ = w.Write(b)
 }
 
 type Data struct {
@@ -113,30 +141,4 @@ func flattenData(bookmark []Bookmark) {
 			})
 		}
 	}
-}
-
-func success(data interface{}) []byte {
-	b, _ := json.Marshal(struct {
-		Code int         `json:"code"`
-		Data interface{} `json:"data"`
-		Msg  string      `json:"msg"`
-	}{
-		200,
-		data,
-		"ok",
-	})
-	return b
-}
-
-func fail(msg string) []byte {
-	b, _ := json.Marshal(struct {
-		Code int         `json:"code"`
-		Data interface{} `json:"data"`
-		Msg  string      `json:"msg"`
-	}{
-		500,
-		"",
-		msg,
-	})
-	return b
 }

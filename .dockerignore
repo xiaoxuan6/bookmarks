@@ -1,0 +1,9 @@
+.idea
+.env
+dist/
+.github/
+.gitignore
+.goreleaser.yml
+LICENSE
+README.md
+docker-compose.yml

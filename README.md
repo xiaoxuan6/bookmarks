@@ -27,22 +27,6 @@ services:
     restart: always
 ```
 
-# .env 配置
-
-```shell
-title="xiaoxuan6‘s 的书签"
-author="xiaoxuan6"
-description="xiaoxuan6 的书签列表"
-```
-
-如何 `.env` 配置为空，将使用默认配置
-
-```shell
-title="xiaoxuan6's Bookmarks"
-author="xiaoxuan6"
-description="xiaoxuan6's Bookmarks"
-```
-
 # bookmarks.json 如何获取
 
 工具 [tools](https://github.con/xiaoxuan6/tools) 中的 `bookmarks` 可以将浏览器书签导出为 `bookmarks.json` 文件

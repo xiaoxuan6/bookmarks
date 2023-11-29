@@ -12,7 +12,7 @@ RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o bookmarks .
 FROM alpine
 
 COPY --from=build /src/bookmarks /app/bookmarks
-COPY --from=build /src/.env.example /app/.env
+COPY --from=build /src/.env /app/.env
 COPY --from=build /src/data /app/data
 
 WORKDIR /app

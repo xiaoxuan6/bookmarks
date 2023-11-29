@@ -1,5 +1,4 @@
 .idea
-.env
 dist/
 .github/
 .gitignore

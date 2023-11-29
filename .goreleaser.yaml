@@ -33,6 +33,7 @@ archives:
       - .env
       - data/*
       - README.md
+      - LICENSE
 
 changelog:
   sort: asc

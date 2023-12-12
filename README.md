@@ -29,4 +29,4 @@ services:
 
 # bookmarks.json 如何获取
 
-工具 [tools](https://github.con/xiaoxuan6/tools) 中的 `bookmarks` 可以将浏览器书签导出为 `bookmarks.json` 文件
+工具 [tools](https://github.com/xiaoxuan6/tools) 中的 `bookmarks` 可以将浏览器书签导出为 `bookmarks.json` 文件

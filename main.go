@@ -7,7 +7,6 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 	"io/fs"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -67,6 +66,10 @@ func index(w http.ResponseWriter, r *http.Request) {
 }
 
 type (
+	Data struct {
+		Item []Item
+	}
+
 	Item struct {
 		Name string `json:"name"`
 		URL  string `json:"url,omitempty"`
@@ -81,6 +84,8 @@ type (
 func bookmarks(w http.ResponseWriter, r *http.Request) {
 	r.Header.Set("Content-Type", "application/json")
 
+	var d Data
+	dir, _ := os.Getwd()
 	_ = filepath.Walk("data", func(path string, info fs.FileInfo, err error) error {
 		if info.IsDir() {
 			return nil
@@ -90,8 +95,7 @@ func bookmarks(w http.ResponseWriter, r *http.Request) {
 			return nil
 		}
 
-		dir, _ := os.Getwd()
-		b, err := ioutil.ReadFile(filepath.Join(dir, "data", info.Name()))
+		b, err := os.ReadFile(filepath.Join(dir, "data", info.Name()))
 		if err != nil {
 			return nil
 		}
@@ -99,10 +103,10 @@ func bookmarks(w http.ResponseWriter, r *http.Request) {
 		var bookmark Bookmark
 		err = json.Unmarshal(b, &bookmark)
 		if err == nil {
-			flattenData(bookmark.Children)
+			flattenData(bookmark.Children, &d)
 		}
 
-		var items []Item
+		var items = make([]Item, 0)
 		err = json.Unmarshal(b, &items)
 		if err == nil {
 			d.Item = append(d.Item, items...)
@@ -124,16 +128,10 @@ func bookmarks(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(b)
 }
 
-type Data struct {
-	Item []Item
-}
-
-var d Data
-
-func flattenData(bookmark []Bookmark) {
+func flattenData(bookmark []Bookmark, d *Data) {
 	for _, child := range bookmark {
 		if len(child.Children) > 0 {
-			flattenData(child.Children)
+			flattenData(child.Children, d)
 		} else {
 			d.Item = append(d.Item, Item{
 				Name: child.Name,
